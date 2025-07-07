@@ -86,20 +86,16 @@ echo "[+] Detected Distro: $DISTRO"
 
 # Function to install via apt (Debian/Ubuntu)
 install_apt() {
-    echo "[+] Updating repositories..."
     sudo add-apt-repository universe -y
     sudo apt update -y && sudo apt upgrade -y
 
-    echo "[+] Installing core packages..."
     sudo apt install -y build-essential gcc make perl git curl wget unzip nmap net-tools \
         openssh-server vsftpd apache2 mysql-server samba smbclient \
         libmysqlclient-dev python3-pip \
         nikto wireshark tftpd-hpa openbsd-inetd distcc || true
 
-    echo "[+] Installing optional legacy tools..."
     sudo apt install -y exploitdb telnet tftp || echo "[*] Some optional packages may need manual install"
 
-    # Install Python dependencies with --break-system-packages
     echo "[+] Installing Python modules..."
     sudo pip3 install --break-system-packages smbus || echo "[!] Failed to install smbus"
 }
@@ -241,19 +237,32 @@ elif [ "$DISTRO" == "arch" ]; then
     echo "[*] Telnet not installed by default on Arch. Consider installing manually."
 fi
 
-# Compile and install vsftpd 2.3.4 backdoor
-echo "[+] Installing vsftpd 2.3.4 (backdoored version)..."
+# DoctorKisow's backdoored vsftpd 2.3.4
+echo "[+] Installing DoctorKisow's backdoored vsftpd 2.3.4..."
 cd /tmp
-wget https://github.com/bcoles/local-exploits/raw/master/vsftpd-2.3.4-backdoor/vsftpd-2.3.4.tar.gz  
-tar -xzvf vsftpd-2.3.4.tar.gz
+sudo apt install -y git build-essential libpam0g-dev > /dev/null 2>&1
+
+git clone https://github.com/DoctorKisow/vsftpd-2.3.4.git 
 cd vsftpd-2.3.4
-sudo sed -i 's/\.\/vsftpd/& \&/' Makefile
-make
-sudo cp vsftpd /usr/sbin/
-sudo cp vsftpd.conf /etc/vsftpd/
+
+chmod +x vsf_findlibs.sh
+sudo sed -i 's/LIBS =/LIBS = -lpam/' Makefile
+
+sudo install -v -d -m 0755 /var/ftp/empty
+sudo install -v -d -m 0755 /home/ftp
+sudo groupadd -g 47 vsftpd > /dev/null 2>&1
+sudo groupadd -g 48 ftp > /dev/null 2>&1
+sudo useradd -c "vsftpd User" -d /dev/null -g vsftpd -s /bin/false -u 47 vsftpd > /dev/null 2>&1
+sudo useradd -c "anonymous FTP User" -d /home/ftp -g ftp -s /bin/false -u 48 FTP > /dev/null 2>&1
+
+make > /dev/null
+sudo make install > /dev/null
+
+sudo install -v -m 644 vsftpd.conf /etc/
+
 echo "[+] Starting backdoored vsftpd..."
-sudo /usr/sbin/vsftpd /etc/vsftpd/vsftpd.conf &
-sudo systemctl stop vsftpd || true
+sudo /usr/sbin/vsftpd /etc/vsftpd.conf &
+sudo systemctl stop vsftpd > /dev/null 2>&1 || true
 
 # Setup CGI Scripts
 echo "[+] Enabling CGI and deploying vulnerable scripts..."
