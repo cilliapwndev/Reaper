@@ -53,10 +53,10 @@ cat << "EOF"
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡼⢛⣿⣄⢀⡼⠁⠀⠙⢿⡻⣦⠀⢀⡀⠀⠀⠈⠓⢦⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢻⡏
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⠞⣩⡶⠋⠙⠿⣿⡁⠤⣤⣀⣀⡁⠀⠉⠀⠈⠑⠢⢄⣀⡀⠈⠙⠲⢶⣤⣤⠴⠆⠀⠀⠀⠀⠀⠀⠀⠀⠘⡇
 ⠀⠀⠀⠀⠀⠀⢀⡴⢟⡵⠞⠁⠀⠀⠀⠀⠈⠙⠳⠾⣿⣿⣿⣷⠦⢤⣀⣀⡀⠀⠉⠛⢿⣍⣉⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⢀⡴⣋⡴⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠁⠀⠀⠀⠀⠈⠉⠉⠉⠉⠉⠉⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⢀⣴⣿⠜⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⢰⣿⠟⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⢀⡴⣋⡴⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠁⠀⠀⠀⠀⠈⠉⠉⠉⠉⠉⠉⠉⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⢀⣴⣿⠜⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⢰⣿⠟⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 #########################################################################
 # Reaper - Turn any Linux distro into a                                 #
 # Metasploitable-like system with vulnerable services.                  #
@@ -238,33 +238,36 @@ elif [ "$DISTRO" == "arch" ]; then
     echo "[*] Telnet not installed by default on Arch. Consider installing manually."
 fi
 
-# DoctorKisow's backdoored vsftpd 2.3.4
-echo "[+] Installing DoctorKisow's backdoored vsftpd 2.3.4..."
+# Install ProFTPD with known vulnerability (CVE-2015-3306)
+echo "[+] Installing ProFTPD 1.3.5 with mod_copy exploit..."
 cd /tmp
-sudo apt install -y git build-essential libpam0g-dev > /dev/null 2>&1 || true
 
-rm -rf vsftpd-2.3.4
-git clone https://github.com/DoctorKisow/vsftpd-2.3.4.git  vsftpd-2.3.4
-cd vsftpd-2.3.4
+if [[ "$DISTRO" == "ubuntu" || "$DISTRO" == "debian" ]]; then
+    sudo apt install -y proftpd-basic proftpd-mod-copy > /dev/null 2>&1
+    echo '[Global]
+AllowForeignAddress on
+<IfModule mod_copy.c>
+  SITE_CHMOD enable="on"
+  SITE_CPTO enable="on"
+</IfModule>' | sudo tee /etc/proftpd/conf.d/copy.conf > /dev/null
+elif [[ "$DISTRO" == "fedora" || "$DISTRO" == "centos" || "$DISTRO" == "rhel" || "$DISTRO" == "rocky" ]]; then
+    sudo yum install -y proftpd > /dev/null 2>&1
+    echo '<IfModule mod_copy.c>
+  SITE_CHMOD on
+  SITE_CPTO enable
+</IfModule>' | sudo tee -a /etc/proftpd.conf > /dev/null
+elif [[ "$DISTRO" == "arch" ]]; then
+    sudo pacman -S --noconfirm proftpd > /dev/null 2>&1
+    echo '<IfModule mod_copy.c>
+  SITE_CHMOD on
+  SITE_CPTO enable
+</IfModule>' | sudo tee -a /etc/proftpd.conf > /dev/null
+fi
 
-chmod +x vsf_findlibs.sh
-sudo sed -i 's/LIBS =/LIBS = -lpam/' Makefile
+# Restart service
+sudo systemctl restart proftpd || echo "[!] Failed to start ProFTPD"
 
-sudo install -v -d -m 0755 /var/ftp/empty
-sudo install -v -d -m 0755 /home/ftp
-sudo groupadd -g 47 vsftpd > /dev/null 2>&1 || true
-sudo groupadd -g 48 ftp > /dev/null 2>&1 || true
-sudo useradd -c "vsftpd User" -d /dev/null -g vsftpd -s /bin/false -u 47 vsftpd > /dev/null 2>&1 || true
-sudo useradd -c "anonymous FTP User" -d /home/ftp -g ftp -s /bin/false -u 48 FTP > /dev/null 2>&1 || true
-
-make > /dev/null
-sudo make install > /dev/null
-
-sudo install -v -m 644 vsftpd.conf /etc/
-
-echo "[+] Starting backdoored vsftpd..."
-sudo /usr/sbin/vsftpd /etc/vsftpd.conf &
-sudo systemctl stop vsftpd > /dev/null 2>&1 || true
+echo "[+] ProFTPD installed and configured with CVE-2015-3306 vulnerability enabled."
 
 # Setup CGI Scripts
 echo "[+] Enabling CGI and deploying vulnerable scripts..."
@@ -334,7 +337,7 @@ echo "# Weak logins:"
 echo "#   root:passw0rd"
 echo "#   bob:password"
 echo "#   john:letmein"
-echo "# Services running: SSH, FTP (backdoor), Telnet, Apache (CGI), MySQL,"
+echo "# Services running: SSH, FTP (ProFTPD CVE-2015-3306), Telnet, Apache (CGI), MySQL,"
 echo "#                     Samba, UnrealIRCD (CVE-2010-2075), DistCC"
 echo "#"
 echo "# 🔒 Remember: DO NOT expose this machine to public networks."
