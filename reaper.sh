@@ -1,5 +1,4 @@
 #!/bin/bash
-
 set -e  # Exit on error
 
 #⚠️ THIS SCRIPT WILL CREATE A DELIBERATELY VULNERABLE MACHINE
@@ -16,15 +15,12 @@ echo " - You absolve the creator of any legal or technical responsibility"
 echo " - You assume full liability for misuse or consequences of this tool"
 echo "===================================================================="
 echo ""
-
 read -p "Type 'I UNDERSTAND AND ACCEPT THE RISK' to continue: " USER_ACK
-
 if [[ "$USER_ACK" != "I UNDERSTAND AND ACCEPT THE RISK" ]]; then
     echo "[-] ABORTED: User did not acknowledge risk."
     echo "[-] Exiting..."
     exit 1
 fi
-
 echo "[+] Acknowledgment received. Proceeding with system setup..."
 sleep 2
 clear
@@ -32,7 +28,6 @@ clear
 # ===== ASCII BANNER =====
 echo -e "\033[1;31m"
 cat << "EOF"
-
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⢛⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⠾⠓⠂⠉⠛⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣰⢟⣡⣄⣤⠤⠀⠤⣈⣿⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
@@ -62,7 +57,6 @@ cat << "EOF"
 ⠀⠀⢀⣴⣿⠜⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⢰⣿⠟⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-
 #########################################################################
 # Reaper - Turn any Linux distro into a                                 #
 # Metasploitable-like system with vulnerable services.                  #
@@ -70,7 +64,6 @@ cat << "EOF"
 # Supported Distros: Debian/Ubuntu, Fedora, CentOS/RHEL, Rocky, Arch    #
 # Created by: Cillia                                                    #
 #########################################################################
-
 EOF
 echo -e "\033[0m"
 
@@ -89,17 +82,23 @@ else
     echo "[-] Could not detect OS. Exiting."
     exit 1
 fi
-
 echo "[+] Detected Distro: $DISTRO"
 
 # Function to install via apt (Debian/Ubuntu)
 install_apt() {
+    sudo add-apt-repository universe -y
     sudo apt update -y && sudo apt upgrade -y
+
     sudo apt install -y build-essential gcc make perl git curl wget unzip nmap net-tools \
         openssh-server telnet vsftpd apache2 mysql-server samba smbclient \
-        libmysqlclient-dev python-pip python3-pip python-smbus \
-        exploitdb nikto wireshark tftpd-hpa tftp openbsd-inetd \
-        unrealircd distcc
+        libmysqlclient-dev python3-pip python3-smbus \
+        nikto wireshark tftpd-hpa tftp-hpa openbsd-inetd distcc
+
+    # Optional packages
+    sudo apt install -y exploitdb || echo "[!] exploitdb not found; consider installing manually."
+    sudo pip3 install smbus || echo "[!] Failed to install smbus via pip."
+
+    echo "[+] Package installation complete."
 }
 
 # Function to install via dnf (Fedora)
@@ -130,7 +129,6 @@ install_pacman() {
     sudo pacman -S --noconfirm base-devel git curl wget unzip nmap net-tools \
         openssh inetutils vsftpd apache mariadb samba python python-pip \
         exploitdb nikto wireshark tftp-hpa inetutils xinetd distcc
-
     sudo mysql_install_db --user=mysql --basedir=/usr --datadir=/var/lib/mysql
 }
 
@@ -191,7 +189,6 @@ case "$DISTRO" in
         sudo systemctl enable smb --now
         sudo systemctl enable xinetd --now
         sudo mysql_secure_installation <<EOF
-
 y
 password
 password
@@ -219,7 +216,6 @@ cat <<EOF | sudo tee /etc/samba/smb.conf
     security = user
     map to guest = Bad User
     dns proxy = no
-
 [share]
     comment = Public Share
     path = /srv/samba
@@ -227,7 +223,6 @@ cat <<EOF | sudo tee /etc/samba/smb.conf
     writable = yes
     guest ok = yes
 EOF
-
 sudo mkdir -p /srv/samba
 sudo chmod -R 0777 /srv/samba
 sudo systemctl restart smb || echo "[!] Failed to restart Samba"
@@ -244,14 +239,13 @@ fi
 # Compile and install vsftpd 2.3.4 backdoor
 echo "[+] Installing vsftpd 2.3.4 (backdoored version)..."
 cd /tmp
-wget https://github.com/bcoles/local-exploits/raw/master/vsftpd-2.3.4-backdoor/vsftpd-2.3.4.tar.gz 
+wget https://github.com/bcoles/local-exploits/raw/master/vsftpd-2.3.4-backdoor/vsftpd-2.3.4.tar.gz  
 tar -xzvf vsftpd-2.3.4.tar.gz
 cd vsftpd-2.3.4
 sudo sed -i 's/\.\/vsftpd/& \&/' Makefile
 make
 sudo cp vsftpd /usr/sbin/
 sudo cp vsftpd.conf /etc/vsftpd/
-
 echo "[+] Starting backdoored vsftpd..."
 sudo /usr/sbin/vsftpd /etc/vsftpd/vsftpd.conf &
 sudo systemctl stop vsftpd || true
@@ -282,15 +276,14 @@ echo "Content-type: text/html"
 echo ""
 echo "<pre>"
 /bin/sh
-echo "</pre>"' | sudo tee $DIR/cmd.cgi > /dev/null
-
+echo "</pre>' | sudo tee $DIR/cmd.cgi > /dev/null
 sudo chmod +x $DIR/cmd.cgi
-sudo chown www-data:www-data $DIR/cmd.cgi || true
+sudo chown www-www-data $DIR/cmd.cgi || true
 
 # Setup UnrealIRCD
 echo "[+] Installing UnrealIRCD 3.2.8.1..."
 cd /tmp
-wget https://www.unrealircd.org/downloads/Unreal3.2.8.1.tar.gz 
+wget https://www.unrealircd.org/downloads/Unreal3.2.8.1.tar.gz  
 tar -xzvf Unreal3.2.8.1.tar.gz
 cd Unreal3.2.8.1
 ./Config -silent
