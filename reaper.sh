@@ -53,16 +53,17 @@ cat << "EOF"
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡼⢛⣿⣄⢀⡼⠁⠀⠙⢿⡻⣦⠀⢀⡀⠀⠀⠈⠓⢦⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢻⡏
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⠞⣩⡶⠋⠙⠿⣿⡁⠤⣤⣀⣀⡁⠀⠉⠀⠈⠑⠢⢄⣀⡀⠈⠙⠲⢶⣤⣤⠴⠆⠀⠀⠀⠀⠀⠀⠀⠀⠘⡇
 ⠀⠀⠀⠀⠀⠀⢀⡴⢟⡵⠞⠁⠀⠀⠀⠀⠈⠙⠳⠾⣿⣿⣿⣷⠦⢤⣀⣀⡀⠀⠉⠛⢿⣍⣉⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⢀⡴⣋⡴⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠁⠀⠀⠀⠀⠈⠉⠉⠉⠉⠉⠉⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⢀⣴⣿⠜⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⢰⣿⠟⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⢀⡴⣋⡴⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠁⠀⠀⠀⠀⠈⠉⠉⠉⠉⠉⠉⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⢀⣴⣿⠜⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⢰⣿⠟⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 #########################################################################
 # Reaper - Turn any Linux distro into a                                 #
 # Metasploitable-like system with vulnerable services.                  #
 #                                                                       #
 # Supported Distros: Debian/Ubuntu, Fedora, CentOS/RHEL, Rocky, Arch    #
 # Created by: Cillia                                                    #
+# Licensed under GNU GPL v3.0                                           #
 #########################################################################
 EOF
 echo -e "\033[0m"
@@ -92,9 +93,9 @@ install_apt() {
     sudo apt install -y build-essential gcc make perl git curl wget unzip nmap net-tools \
         openssh-server vsftpd apache2 mysql-server samba smbclient \
         libmysqlclient-dev python3-pip \
-        nikto wireshark tftpd-hpa openbsd-inetd distcc || true
+        nikto wireshark tftpd-hpa tftp-hpa openbsd-inetd distcc || true
 
-    sudo apt install -y exploitdb telnet tftp || echo "[*] Some optional packages may need manual install"
+    sudo apt install -y exploitdb telnet || echo "[*] Some optional packages may need manual install"
 
     echo "[+] Installing Python modules..."
     sudo pip3 install --break-system-packages smbus || echo "[!] Failed to install smbus"
@@ -240,7 +241,7 @@ fi
 # DoctorKisow's backdoored vsftpd 2.3.4
 echo "[+] Installing DoctorKisow's backdoored vsftpd 2.3.4..."
 cd /tmp
-sudo apt install -y git build-essential libpam0g-dev > /dev/null 2>&1
+sudo apt install -y git build-essential libpam0g-dev > /dev/null 2>&1 || true
 
 git clone https://github.com/DoctorKisow/vsftpd-2.3.4.git 
 cd vsftpd-2.3.4
@@ -250,10 +251,10 @@ sudo sed -i 's/LIBS =/LIBS = -lpam/' Makefile
 
 sudo install -v -d -m 0755 /var/ftp/empty
 sudo install -v -d -m 0755 /home/ftp
-sudo groupadd -g 47 vsftpd > /dev/null 2>&1
-sudo groupadd -g 48 ftp > /dev/null 2>&1
-sudo useradd -c "vsftpd User" -d /dev/null -g vsftpd -s /bin/false -u 47 vsftpd > /dev/null 2>&1
-sudo useradd -c "anonymous FTP User" -d /home/ftp -g ftp -s /bin/false -u 48 FTP > /dev/null 2>&1
+sudo groupadd -g 47 vsftpd > /dev/null 2>&1 || true
+sudo groupadd -g 48 ftp > /dev/null 2>&1 || true
+sudo useradd -c "vsftpd User" -d /dev/null -g vsftpd -s /bin/false -u 47 vsftpd > /dev/null 2>&1 || true
+sudo useradd -c "anonymous FTP User" -d /home/ftp -g ftp -s /bin/false -u 48 FTP > /dev/null 2>&1 || true
 
 make > /dev/null
 sudo make install > /dev/null
