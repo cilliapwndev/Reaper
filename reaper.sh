@@ -6,8 +6,6 @@ set -e  # Exit on error
 #⚠️ FOR PENETRATION TESTING, MALWARE DEPLOYMENT, AND EXPLOIT DEMOS
 #⚠️ EXPOSING THIS TO A LIVE NETWORK MAY RESULT IN SYSTEM COMPROMISE
 
-EOF
-
 sleep 2
 echo "===================================================================="
 echo " BEFORE CONTINUING, YOU MUST AGREE TO THE FOLLOWING:"
