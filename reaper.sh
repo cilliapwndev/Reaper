@@ -96,7 +96,7 @@ install_apt() {
 
     # Optional packages
     sudo apt install -y exploitdb || echo "[!] exploitdb not found; consider installing manually."
-    sudo pip3 install smbus || echo "[!] Failed to install smbus via pip."
+    sudo pip3 install smbus --break-system-packages || echo "[!] Failed to install smbus via pip."
 
     echo "[+] Package installation complete."
 }
